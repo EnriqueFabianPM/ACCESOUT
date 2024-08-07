@@ -10,5 +10,6 @@ class EstudiantesExport implements FromCollection
     public function collection()
     {
         return Estudiante::all();
-    }
+    }   
+    
 }
