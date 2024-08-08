@@ -140,7 +140,7 @@ class ControladorEstudiante extends Controller
         $file = $request->file('import_file');
         Excel::import(new EstudiantesImport, $file);
 
-        return redirect()->route('estudiantes.multiplecreate')->with('success', 'Estudiantes importados exitosamente.');
+        return redirect()->route('estudiantes.index')->with('success', 'Estudiantes importados exitosamente.');
     }
 
     public function showMultipleCreateForm(): View
