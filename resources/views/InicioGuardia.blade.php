@@ -4,6 +4,37 @@
 
 @section('content')
 <div class="container mt-4">
+    <style>
+        .btn-primary{
+            align-items: center;
+            background-color: #2bc021;
+            column-gap: 10px;
+            display: flex;
+            padding: 10px;
+            margin-top: 150px;
+            border-color: #ffffff;
+
+
+        }
+        .btn-secondary{
+            background-color: #2bc021;
+            column-gap: 10px;
+            display: flex;
+            padding: 10px;
+            margin-top: 150px;
+            border-color: #ffffff;
+        }
+        .btn-info{
+            background-color: #2bc021;
+            color: #ffffff;
+            column-gap: 10px;
+            display: flex;
+            padding: 10px;
+            margin-top: 150px;
+            border-color: #ffffff;
+
+        }
+    </style>
     <div class="row">
         <div class="col-lg-12">
             <h1 class="text-center">Página Principal del Guardia de Seguridad</h1>

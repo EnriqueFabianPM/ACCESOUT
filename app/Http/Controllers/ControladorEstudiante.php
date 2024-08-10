@@ -145,6 +145,12 @@ class ControladorEstudiante extends Controller
         return redirect()->route('estudiantes.index')->with('success', 'Estudiantes importados exitosamente.');
     }
 
+    public function showMultipleCreateForm(): View
+    {
+        // Show a form to upload a file for multiple student creation
+        return view('estudiantes.multiplecreate');
+    }
+
     public function storeMultiple(Request $request)
     {
         $data = $request->all();

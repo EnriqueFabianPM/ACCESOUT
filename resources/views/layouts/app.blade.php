@@ -11,11 +11,12 @@
     <!-- Custom Styles -->
     <style>
         body {
-            background-color: #b1f7a3; /* Main body background color */
+            background-color: #25b725; /* Main body background color */
         }
         .container {
             background-color: #ffffff; /* Container background color */
-            margin-top: 20px; /* Adjust top margin for spacing */
+            border-radius: 10px;
+            margin-top: 50px; /* Adjust top margin for spacing */
         }
         /* Add your custom styles here */
     </style>
