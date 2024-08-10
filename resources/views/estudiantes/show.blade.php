@@ -3,14 +3,11 @@
 @section('content')
 <div class="row">
     <div class="col-lg-6">
-        <h2>Mostrar Información de Estudiante</h2>
+        <center><h2>Mostrar Información de Estudiante</h2></center>
     </div>
     <div class="col-lg-6 text-end">
         <a class="btn btn-primary" href="{{ route('estudiantes.index') }}">Volver al Registro</a>
     </div>
-</div>
-
-<div class="row mt-4">
     <div class="col-lg-6">
         <table class="table table-bordered table-striped">
             <tr>
@@ -48,4 +45,5 @@
         </table>
     </div>
 </div>
+
 @endsection

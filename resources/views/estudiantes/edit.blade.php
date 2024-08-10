@@ -58,7 +58,7 @@
                 <input type="hidden" name="qrCodeData" id="qrCodeData">
             </div>
             
-            <button type="submit" class="btn btn-success">Actualizar Registro</button>
+            <button type="submit" class="btn btn-success">Actualizar Registro de Estudiante</button>
         </form>
     </div>
 </div>

@@ -37,11 +37,6 @@ Route::post('/estudiantes/save-qrcode', [ControladorEstudiante::class, 'saveQRCo
 Route::post('/empleados/save-qrcode', [ControladorEmpleado::class, 'saveQRCode'])->name('empleados.save.qrcode');
 Route::post('/visitantes/save-qrcode', [ControladorVisitante::class, 'saveQRCode'])->name('visitantes.save.qrcode');
 
-// Route for logs
-Route::get('/estudiantes/log', [ControladorEstudiante::class, 'log'])->name('estudiantes.log');
-Route::get('/empleados/log', [ControladorEmpleado::class, 'log'])->name('empleados.log');
-Route::get('/visitantes/log', [ControladorVisitante::class, 'log'])->name('visitantes.log');
-
 // Custom Entrada and Salida routes using ControladorGuardia
 Route::post('/register-entrada/{type}', [ControladorGuardia::class, 'registerEntrada'])->name('register.entrada');
 Route::post('/register-salida/{type}', [ControladorGuardia::class, 'registerSalida'])->name('register.salida');
@@ -57,9 +52,9 @@ Route::get('estudiantes/edit/{identificador}', [ControladorEstudiante::class, 'e
 Route::delete('estudiantes/{identificador}', [ControladorEstudiante::class, 'destroy'])->name('estudiantes.destroy');
 Route::get('estudiantes/import', [ControladorEstudiante::class, 'index'])->name('estudiantes.import');
 Route::post('estudiantes/import', [ControladorEstudiante::class, 'importFromExcel'])->name('estudiantes.import');
-Route::get('estudiantes/multiplecreate', [ControladorEstudiante::class, 'showMultipleCreateForm'])->name('estudiantes.multiplecreate');
-Route::post('estudiantes/multiplecreate', [ControladorEstudiante::class, 'storeMultiple'])->name('estudiantes.storemultiple');
 Route::get('estudiantes/export/', [ControladorEstudiante::class, 'export'])->name('estudiantes.export');
+Route::patch('/estudiantes/{identificador}/update-photo', [ControladorEstudiante::class, 'updatePhoto'])->name('estudiantes.updatePhoto');
+Route::patch('/estudiantes/{identificador}/update-qr', [ControladorEstudiante::class, 'updateQRCode'])->name('estudiantes.updateQRCode');
 
 // Rutas de empleados
 Route::get('empleados/entrada', [ControladorEmpleado::class, 'showEntradaForm'])->name('empleados.showEntradaForm');

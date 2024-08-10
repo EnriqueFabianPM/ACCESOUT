@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use App\Exports\EstudiantesExport;
 use App\Models\Estudiante;
 use Illuminate\Http\Request;
@@ -9,7 +10,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EstudianteQR;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\EstudiantesImport;
 
@@ -32,27 +32,27 @@ class ControladorEstudiante extends Controller
             'Foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'identificador' => 'required|string|max:255',
             'nombre' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
-            'semestre' => 'required|string|max:255',
-            'grupo' => 'required|string|max:255',
+            'apellidos' => 'nullable|string|max:255',
+            'semestre' => 'nullable|string|max:255',
+            'grupo' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:estudiantes',
         ]);
 
         if ($request->hasFile('Foto')) {
             $imagen = $request->file('Foto');
-            $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-            $rutaImagen = $imagen->move(public_path('FotosEstudiantes'), $nombreImagen);
+            $nombreImagen = 'Estudiante_' . $validatedData['identificador'] . '.jpg';
+            $imagen->move(public_path('FotosEstudiantes'), $nombreImagen);
             $validatedData['Foto'] = 'FotosEstudiantes/' . $nombreImagen;
         }
 
         if ($request->filled('qrCodeData')) {
             $qrCodeData = $request->input('qrCodeData');
-            $qrCodePath = $this->saveQRCode($qrCodeData);
+            $qrCodePath = $this->saveQRCodeImage($qrCodeData, 'ImagenesQREstudiantes/' . $validatedData['identificador'] . '_CodigoQR.jpg');
             $validatedData['Fotoqr'] = $qrCodePath;
         }
 
-        $estudiante = Estudiante::create($validatedData);
-        $this->sendQRCodeByEmail($estudiante);
+        Estudiante::create($validatedData);
+        $this->sendQRCodeByEmail(Estudiante::where('identificador', $validatedData['identificador'])->first());
 
         return redirect()->route('estudiantes.index')->with('flash_message', 'Estudiante dado de alta exitósamente!');
     }
@@ -76,22 +76,22 @@ class ControladorEstudiante extends Controller
             'Foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'identificador' => 'required|string|max:255',
             'nombre' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
-            'semestre' => 'required|string|max:255',
-            'grupo' => 'required|string|max:255',
+            'apellidos' => 'nullable|string|max:255',
+            'semestre' => 'nullable|string|max:255',
+            'grupo' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:estudiantes,email,' . $estudiante->id,
         ]);
 
         if ($request->hasFile('Foto')) {
             $imagen = $request->file('Foto');
-            $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-            $rutaImagen = $imagen->move(public_path('FotosEstudiantes'), $nombreImagen);
+            $nombreImagen = 'Estudiante_' . $validatedData['identificador'] . '.jpg';
+            $imagen->move(public_path('FotosEstudiantes'), $nombreImagen);
             $validatedData['Foto'] = 'FotosEstudiantes/' . $nombreImagen;
         }
 
         if ($request->filled('qrCodeData')) {
             $qrCodeData = $request->input('qrCodeData');
-            $qrCodePath = $this->saveQRCode($qrCodeData);
+            $qrCodePath = $this->saveQRCodeImage($qrCodeData, 'ImagenesQREstudiantes/' . $validatedData['identificador'] . '_CodigoQR.jpg');
             $validatedData['Fotoqr'] = $qrCodePath;
         }
 
@@ -108,13 +108,15 @@ class ControladorEstudiante extends Controller
         return redirect()->route('estudiantes.index')->with('flash_message', 'Registro de estudiante eliminado exitósamente!');
     }
 
-    public function saveQRCode($qrCodeData)
+    public function saveQRCodeImage($qrCodeData, $filePath)
     {
+        // Decode the QR code image data
         $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $qrCodeData));
-        $qrCodePath = 'ImagenesQREstudiantes/' . time() . '_qrcode.jpg';
-        file_put_contents(public_path($qrCodePath), $imageData);
-
-        return $qrCodePath;
+    
+        // Save the image to the specified path
+        file_put_contents(public_path($filePath), $imageData);
+    
+        return $filePath;
     }
 
     public function sendQRCodeByEmail(Estudiante $estudiante)
@@ -140,20 +142,13 @@ class ControladorEstudiante extends Controller
         $file = $request->file('import_file');
         Excel::import(new EstudiantesImport, $file);
 
-        return redirect()->route('estudiantes.multiplecreate')->with('success', 'Estudiantes importados exitosamente.');
-    }
-
-    public function showMultipleCreateForm(): View
-    {
-        // Show a form to upload a file for multiple student creation
-        return view('estudiantes.multiplecreate');
+        return redirect()->route('estudiantes.index')->with('success', 'Estudiantes importados exitosamente.');
     }
 
     public function storeMultiple(Request $request)
     {
         $data = $request->all();
-    
-        // Validate the data
+
         $validatedData = $request->validate([
             'identificadores.*' => 'required|string',
             'nombres.*' => 'required|string',
@@ -164,7 +159,7 @@ class ControladorEstudiante extends Controller
             'qrCodeData.*' => 'nullable|string',
             'Fotos.*' => 'nullable|file|mimes:jpg,jpeg,png',
         ]);
-    
+
         foreach ($validatedData['identificadores'] as $index => $identificador) {
             $studentData = [
                 'identificador' => $identificador,
@@ -175,25 +170,64 @@ class ControladorEstudiante extends Controller
                 'email' => $validatedData['emails'][$index] ?? null,
                 'Fotoqr' => $validatedData['qrCodeData'][$index] ?? null,
             ];
-    
-            if (isset($request->file('Fotos')[$index])) {
-                $photo = $request->file('Fotos')[$index];
-                $photoPath = $photo->store('FotosEstudiantes', 'public');
-                $studentData['Foto'] = $photoPath;
+
+            if (isset($validatedData['Fotos'][$index])) {
+                $file = $validatedData['Fotos'][$index];
+                $fileName = 'Estudiante_' . $identificador . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('FotosEstudiantes'), $fileName);
+                $studentData['Foto'] = 'FotosEstudiantes/' . $fileName;
             }
-    
-            Estudiante::updateOrCreate(
-                ['identificador' => $studentData['identificador']],
-                $studentData
-            );
+
+            Estudiante::create($studentData);
         }
-    
-        return redirect()->route('estudiantes.index')->with('success', 'Estudiantes registrados exitosamente.');
+
+        return redirect()->route('estudiantes.index')->with('flash_message', 'Estudiantes dados de alta exitósamente!');
     }
-    
-    public function export() 
+
+    public function export()
     {
-        return Excel::download(new EstudiantesExport, 'users.xlsx');
+        return Excel::download(new EstudiantesExport, 'estudiantes.xlsx');
+    }
+
+    public function updatePhoto(Request $request, $identificador)
+    {
+        $request->validate([
+            'Foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $estudiante = Estudiante::where('identificador', $identificador)->firstOrFail();
+
+        if ($estudiante->Foto) {
+            Storage::delete($estudiante->Foto);
+        }
+
+        $foto = $request->file('Foto');
+        $fotoPath = 'FotosEstudiantes/Estudiante_' . $identificador . '.' . $foto->getClientOriginalExtension();
+        $foto->move(public_path('FotosEstudiantes'), $fotoPath);
+
+        $estudiante->update(['Foto' => $fotoPath]);
+
+        return redirect()->route('estudiantes.index', $identificador)->with('flash_message', 'Foto actualizada exitósamente!');
+    }
+
+    public function updateQRCode(Request $request, $identificador)
+    {
+        $request->validate([
+            'qrCodeData' => 'required|string',
+        ]);
+    
+        $estudiante = Estudiante::where('identificador', $identificador)->firstOrFail();
+        $qrCodeData = $request->input('qrCodeData');
+        $qrCodePath = $this->saveQRCodeImage($qrCodeData, 'ImagenesQREstudiantes/' . $identificador . '_CodigoQR.jpg');
+    
+        // Update the student's QR code path
+        $estudiante->Fotoqr = $qrCodePath;
+        $estudiante->save();
+    
+        return response()->json([
+            'success' => true,
+            'filePath' => asset($qrCodePath),
+        ]);
     }
     
 }

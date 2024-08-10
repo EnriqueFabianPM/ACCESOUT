@@ -44,32 +44,15 @@ class EstudiantesImport implements ToCollection, WithHeadingRow
 
     private function processFilePath($path)
     {
-        // Handle URLs or file paths for images
+        // Handle file paths by removing 'file:///' prefix if present
         if (!$path) {
             return null;
         }
 
-        $fileName = time() . '_' . basename($path);
-        $destinationPath = public_path('FotosEstudiantes/' . $fileName);
+        // Remove 'file:///' from the path if it exists
+        $path = str_replace('file:///', '', $path);
 
-        try {
-            // Handle URL or local path copying
-            if (filter_var($path, FILTER_VALIDATE_URL)) {
-                // If path is a URL, download and save the image
-                $imageContents = file_get_contents($path);
-                if ($imageContents !== false) {
-                    file_put_contents($destinationPath, $imageContents);
-                    return 'FotosEstudiantes/' . $fileName;
-                }
-            } elseif (file_exists($path)) {
-                // If path is a local file, copy it
-                copy($path, $destinationPath);
-                return 'FotosEstudiantes/' . $fileName;
-            }
-        } catch (\Exception $e) {
-            \Log::error("Error processing file path: " . $e->getMessage());
-        }
-
-        return null;
+        // Return the relative path to the public directory
+        return $path ? 'FotosEstudiantes/' . basename($path) : null;
     }
 }

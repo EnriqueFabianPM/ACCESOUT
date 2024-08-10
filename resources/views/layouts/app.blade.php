@@ -20,6 +20,7 @@
         /* Add your custom styles here */
     </style>
     @stack('styles') <!-- For additional page-specific styles -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <header>
