@@ -32,11 +32,6 @@ Route::get('/get-ip', function () {
 // Route for handling QR code scans
 Route::get('/scan/{qrCode}', [ControladorEscaner::class, 'handleScan'])->name('scan.handle');
 
-// Custom Save QR Codes routes
-Route::post('/estudiantes/save-qrcode', [ControladorEstudiante::class, 'saveQRCode'])->name('estudiantes.save.qrcode');
-Route::post('/empleados/save-qrcode', [ControladorEmpleado::class, 'saveQRCode'])->name('empleados.save.qrcode');
-Route::post('/visitantes/save-qrcode', [ControladorVisitante::class, 'saveQRCode'])->name('visitantes.save.qrcode');
-
 // Custom Entrada and Salida routes using ControladorGuardia
 Route::post('/register-entrada/{type}', [ControladorGuardia::class, 'registerEntrada'])->name('register.entrada');
 Route::post('/register-salida/{type}', [ControladorGuardia::class, 'registerSalida'])->name('register.salida');
@@ -46,25 +41,38 @@ Route::resource('estudiantes', ControladorEstudiante::class)->except(['show', 'e
 Route::get('estudiantes/show/{identificador}', [ControladorEstudiante::class, 'show'])->name('estudiantes.show');
 Route::get('estudiantes/edit/{identificador}', [ControladorEstudiante::class, 'edit'])->name('estudiantes.edit');
 Route::delete('estudiantes/{identificador}', [ControladorEstudiante::class, 'destroy'])->name('estudiantes.destroy');
+Route::post('estudiantes/save-qrcode', [ControladorEstudiante::class, 'saveQRCodeImage'])->name('estudiantes.save.qrcode');
 Route::get('estudiantes/import', [ControladorEstudiante::class, 'index'])->name('estudiantes.import');
 Route::post('estudiantes/import', [ControladorEstudiante::class, 'importFromExcel'])->name('estudiantes.import');
 Route::get('estudiantes/export/', [ControladorEstudiante::class, 'export'])->name('estudiantes.export');
-Route::patch('/estudiantes/{identificador}/update-photo', [ControladorEstudiante::class, 'updatePhoto'])->name('estudiantes.updatePhoto');
-Route::patch('/estudiantes/{identificador}/update-qr', [ControladorEstudiante::class, 'updateQRCode'])->name('estudiantes.updateQRCode');
-Route::post('/estudiantes/{estudiante}/send-qr', [ControladorEstudiante::class, 'sendQRCode'])->name('estudiantes.sendQRCode');
+Route::patch('estudiantes/{identificador}/update-photo', [ControladorEstudiante::class, 'updatePhoto'])->name('estudiantes.updatePhoto');
+Route::patch('estudiantes/{identificador}/update-qr', [ControladorEstudiante::class, 'updateQRCode'])->name('estudiantes.updateQRCode');
+Route::post('estudiantes/{estudiante}/send-qr', [ControladorEstudiante::class, 'sendQRCode'])->name('estudiantes.sendQRCode');
 
 // Rutas de empleados
 Route::resource('empleados', ControladorEmpleado::class)->except(['show', 'edit', 'destroy']);
 Route::get('empleados/show/{identificador}', [ControladorEmpleado::class, 'show'])->name('empleados.show');
 Route::get('empleados/edit/{identificador}', [ControladorEmpleado::class, 'edit'])->name('empleados.edit');
 Route::delete('empleados/{identificador}', [ControladorEmpleado::class, 'destroy'])->name('empleados.destroy');
-
+Route::post('empleados/save-qrcode', [ControladorEmpleado::class, 'saveQRCodeImage'])->name('empleados.save.qrcode');
+Route::get('empleados/import', [ControladorEmpleado::class, 'index'])->name('empleados.import');
+Route::post('empleados/import', [ControladorEmpleado::class, 'importFromExcel'])->name('empleados.import');
+Route::get('empleados/export/', [ControladorEmpleado::class, 'export'])->name('empleados.export');
+Route::patch('empleados/{identificador}/update-photo', [ControladorEmpleado::class, 'updatePhoto'])->name('empleados.updatePhoto');
+Route::patch('empleados/{identificador}/update-qr', [ControladorEmpleado::class, 'updateQRCode'])->name('empleados.updateQRCode');
+Route::post('empleados/{empleado}/send-qr', [ControladorEmpleado::class, 'sendQRCode'])->name('empleados.sendQRCode');
 
 // Rutas de visitantes
 Route::resource('visitantes', ControladorVisitante::class)->except(['show', 'edit', 'destroy']);
 Route::get('visitantes/show/{identificador}', [ControladorVisitante::class, 'show'])->name('visitantes.show');
 Route::get('visitantes/edit/{identificador}', [ControladorVisitante::class, 'edit'])->name('visitantes.edit');
 Route::delete('visitantes/{identificador}', [ControladorVisitante::class, 'destroy'])->name('visitantes.destroy');
+Route::post('visitantes/save-qrcode', [ControladorVisitante::class, 'saveQRCodeImage'])->name('visitantes.save.qrcode');
+Route::get('visitantes/import', [ControladorVisitante::class, 'index'])->name('visitantes.import');
+Route::post('visitantes/import', [ControladorVisitante::class, 'importFromExcel'])->name('visitantes.import');
+Route::get('visitantes/export/', [ControladorVisitante::class, 'export'])->name('visitantes.export');
+Route::patch('visitantes/{identificador}/update-qr', [ControladorVisitante::class, 'updateQRCode'])->name('visitantes.updateQRCode');
+Route::post('visitantes/{visitante}/send-qr', [ControladorVisitante::class, 'sendQRCode'])->name('visitantes.sendQRCode');
 
 // Admin routes with middleware
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {

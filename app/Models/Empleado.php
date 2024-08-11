@@ -18,8 +18,6 @@ class Empleado extends Model
         'areatrabajo',
         'telefono',
         'email',
-        'entrada',
-        'salida',
     ];
     use HasFactory;
 

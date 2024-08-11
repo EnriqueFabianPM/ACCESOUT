@@ -17,8 +17,6 @@ class Visitante extends Model
         'motivo',
         'telefono',
         'email',
-        'entrada',
-        'salida',
     ];
     use HasFactory;
 

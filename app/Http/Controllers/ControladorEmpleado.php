@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
+use App\Exports\EmpleadosExport;
 use App\Models\Empleado;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,6 +11,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmpleadoQR;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\EmpleadosImport;
 
 class ControladorEmpleado extends Controller
 {
@@ -49,22 +53,20 @@ class ControladorEmpleado extends Controller
         // Handle Foto upload
         if ($request->hasFile('Foto')) {
             $imagen = $request->file('Foto');
-            $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-            $rutaImagen = $imagen->move(public_path('FotosEmpleados'), $nombreImagen);
+            $nombreImagen = 'Estudiante_' . $validatedData['identificador'] . '.jpg';
+            $imagen->move(public_path('FotosEmpleados'), $nombreImagen);
             $validatedData['Foto'] = 'FotosEmpleados/' . $nombreImagen;
         }
-        
+
         if ($request->filled('qrCodeData')) {
             $qrCodeData = $request->input('qrCodeData');
-            $qrCodePath = $this->saveQRCode($qrCodeData);
+            $qrCodePath = $this->saveQRCodeImage($qrCodeData, 'ImagenesQREmpleados/' . $validatedData['identificador'] . '_CodigoQR.jpg');
             $validatedData['Fotoqr'] = $qrCodePath;
         }
 
-        // Create student record
-        $empleado = Empleado::create($validatedData);
+        Empleado::create($validatedData);
+        $this->sendQRCodeByEmail(Empleado::where('identificador', $validatedData['identificador'])->first());
 
-        // Send email with QR code attached
-        $this->sendQRCodeByEmail($empleado);
         return redirect()->route('empleados.index')->with('flash_message', 'Empleado dado de alta exitósamente!');
     }
 
@@ -107,21 +109,21 @@ class ControladorEmpleado extends Controller
         // Handle Foto upload
         if ($request->hasFile('Foto')) {
             $imagen = $request->file('Foto');
-            $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-            $rutaImagen = $imagen->move(public_path('FotosEmpleados'), $nombreImagen);
+            $nombreImagen = 'Estudiante_' . $validatedData['identificador'] . '.jpg';
+            $imagen->move(public_path('FotosEmpleados'), $nombreImagen);
             $validatedData['Foto'] = 'FotosEmpleados/' . $nombreImagen;
         }
 
         if ($request->filled('qrCodeData')) {
             $qrCodeData = $request->input('qrCodeData');
-            $qrCodePath = $this->saveQRCode($qrCodeData);
+            $qrCodePath = $this->saveQRCodeImage($qrCodeData, 'ImagenesQREmpleados/' . $validatedData['identificador'] . '_CodigoQR.jpg');
             $validatedData['Fotoqr'] = $qrCodePath;
         }
 
         $empleado->update($validatedData);
 
         // Send email with QR code attached
-        $this->sendQRCodeByEmail($empleado);
+        $this->sendQRCodeByEmail(Empleado::where('identificador', $validatedData['identificador'])->first());
 
         return redirect()->route('empleados.index')->with('flash_message', 'Registro de empleado actualizado exitósamente!');
     }
@@ -136,13 +138,15 @@ class ControladorEmpleado extends Controller
         return redirect()->route('empleados.index')->with('flash_message', 'Registro de empleado eliminado exitósamente!');
     }
 
-    private function saveQRCode($qrCodeData)
+    public function saveQRCodeImage($qrCodeData, $filePath)
     {
+        // Decode the QR code image data
         $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $qrCodeData));
-        $qrCodePath = 'ImagenesQREmpleados/' . time() . '_qrcode.jpg';
-        file_put_contents(public_path($qrCodePath), $imageData);
-
-        return $qrCodePath;
+    
+        // Save the image to the specified path
+        file_put_contents(public_path($filePath), $imageData);
+    
+        return $filePath;
     }
 
     /**
@@ -160,5 +164,85 @@ class ControladorEmpleado extends Controller
         } else {
             Mail::to($email)->send(new EmpleadoQR($empleado->Fotoqr));
         }
+    }
+
+    public function sendQRCode(Empleado $empleado)
+    {
+        $email = $empleado->email;
+        $domain = substr(strrchr($email, "@"), 1);
+
+        // Determine which mailer to use based on the email domain
+        if ($domain === 'gmail.com' || $domain === 'googlemail.com') {
+            Mail::mailer('smtp')->to($email)->send(new EmpleadoQR($empleado->Fotoqr));
+        } elseif (in_array($domain, ['outlook.com', 'hotmail.com', 'live.com'])) {
+            Mail::mailer('smtp_outlook')->to($email)->send(new EmpleadoQR($empleado->Fotoqr));
+        } else {
+            Mail::to($email)->send(new EmpleadoQR($empleado->Fotoqr));
+        }
+
+        return redirect()->route('empleados.index')->with('success', 'Código QR enviado correctamente.');
+    }
+    
+    public function importFromExcel(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|mimes:xlsx'
+        ]);
+
+        $file = $request->file('import_file');
+        Excel::import(new EmpleadosImport, $file);
+
+        return redirect()->route('empleados.index')->with('success', 'Estudiantes importados exitosamente.');
+    }
+
+    public function export()
+    {
+        return Excel::download(new EmpleadosExport, 'empleados.xlsx');
+    }
+
+    public function updatePhoto(Request $request, $identificador)
+    {
+        $request->validate([
+            'Foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $empleado = Empleado::where('identificador', $identificador)->firstOrFail();
+
+        if ($empleado->Foto) {
+            Storage::delete($empleado->Foto);
+        }
+
+        $foto = $request->file('Foto');
+        $fotoPath = 'FotosEmpleados/Empleado_' . $identificador . '.' . $foto->getClientOriginalExtension();
+        $foto->move(public_path('FotosEmpleados'), $fotoPath);
+
+        $empleado->update(['Foto' => $fotoPath]);
+
+        return redirect()->route('empleados.index', $identificador)->with('flash_message', 'Foto actualizada exitósamente!');
+    }
+
+    public function updateQRCode(Request $request, $identificador)
+    {
+        $request->validate([
+            'qrCodeData' => 'required|string',
+        ]);
+    
+        $empleado = Empleado::where('identificador', $identificador)->firstOrFail();
+
+        if ($empleado->Fotoqr) {
+            Storage::delete($empleado->Fotoqr);
+        }
+
+        $qrCodeData = $request->input('qrCodeData');
+        $qrCodePath = $this->saveQRCodeImage($qrCodeData, 'ImagenesQREmpleados/' . $identificador . '_CodigoQR.jpg');
+    
+        // Update the student's QR code path
+        $empleado->Fotoqr = $qrCodePath;
+        $empleado->save();
+    
+        return response()->json([
+            'success' => true,
+            'filePath' => asset($qrCodePath),
+        ]);
     }
 }

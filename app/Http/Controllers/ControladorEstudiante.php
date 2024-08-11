@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\EstudianteQR;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\EstudiantesImport;
-use Illuminate\Support\Facades\Log;
 
 class ControladorEstudiante extends Controller
 {
@@ -136,29 +135,21 @@ class ControladorEstudiante extends Controller
 
     public function sendQRCode(Estudiante $estudiante)
     {
-        try {
-            // Get the student's email and domain
-            $email = $estudiante->email;
-            $domain = substr(strrchr($email, "@"), 1);
-    
-            // Determine which mailer to use based on the email domain
-            if ($domain === 'gmail.com' || $domain === 'googlemail.com') {
-                Mail::mailer('smtp')->to($email)->send(new EstudianteQR($estudiante->Fotoqr));
-            } elseif (in_array($domain, ['outlook.com', 'hotmail.com', 'live.com'])) {
-                Mail::mailer('smtp_outlook')->to($email)->send(new EstudianteQR($estudiante->Fotoqr));
-            } else {
-                Mail::to($email)->send(new EstudianteQR($estudiante->Fotoqr));
-            }
-    
-            return redirect()->route('estudiantes.index')->with('success', 'Código QR enviado correctamente.');
-    
-        } catch (\Exception $e) {
-            Log::error('Failed to send email: ' . $e->getMessage());
-            return redirect()->route('estudiantes.index')->with('error', 'Failed to send QR code.');
+        $email = $estudiante->email;
+        $domain = substr(strrchr($email, "@"), 1);
+
+        // Determine which mailer to use based on the email domain
+        if ($domain === 'gmail.com' || $domain === 'googlemail.com') {
+            Mail::mailer('smtp')->to($email)->send(new EstudianteQR($estudiante->Fotoqr));
+        } elseif (in_array($domain, ['outlook.com', 'hotmail.com', 'live.com'])) {
+            Mail::mailer('smtp_outlook')->to($email)->send(new EstudianteQR($estudiante->Fotoqr));
+        } else {
+            Mail::to($email)->send(new EstudianteQR($estudiante->Fotoqr));
         }
+
+        return redirect()->route('estudiantes.index')->with('success', 'Código QR enviado correctamente.');
     }
     
-
     public function importFromExcel(Request $request)
     {
         $request->validate([
@@ -169,51 +160,6 @@ class ControladorEstudiante extends Controller
         Excel::import(new EstudiantesImport, $file);
 
         return redirect()->route('estudiantes.index')->with('success', 'Estudiantes importados exitosamente.');
-    }
-
-    public function showMultipleCreateForm(): View
-    {
-        // Show a form to upload a file for multiple student creation
-        return view('estudiantes.multiplecreate');
-    }
-
-    public function storeMultiple(Request $request)
-    {
-        $data = $request->all();
-
-        $validatedData = $request->validate([
-            'identificadores.*' => 'required|string',
-            'nombres.*' => 'required|string',
-            'apellidos.*' => 'nullable|string',
-            'semestres.*' => 'nullable|string',
-            'grupos.*' => 'nullable|string',
-            'emails.*' => 'nullable|email',
-            'qrCodeData.*' => 'nullable|string',
-            'Fotos.*' => 'nullable|file|mimes:jpg,jpeg,png',
-        ]);
-
-        foreach ($validatedData['identificadores'] as $index => $identificador) {
-            $studentData = [
-                'identificador' => $identificador,
-                'nombre' => $validatedData['nombres'][$index],
-                'apellidos' => $validatedData['apellidos'][$index] ?? null,
-                'semestre' => $validatedData['semestres'][$index] ?? null,
-                'grupo' => $validatedData['grupos'][$index] ?? null,
-                'email' => $validatedData['emails'][$index] ?? null,
-                'Fotoqr' => $validatedData['qrCodeData'][$index] ?? null,
-            ];
-
-            if (isset($validatedData['Fotos'][$index])) {
-                $file = $validatedData['Fotos'][$index];
-                $fileName = 'Estudiante_' . $identificador . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('FotosEstudiantes'), $fileName);
-                $studentData['Foto'] = 'FotosEstudiantes/' . $fileName;
-            }
-
-            Estudiante::create($studentData);
-        }
-
-        return redirect()->route('estudiantes.index')->with('flash_message', 'Estudiantes dados de alta exitósamente!');
     }
 
     public function export()
@@ -249,6 +195,11 @@ class ControladorEstudiante extends Controller
         ]);
     
         $estudiante = Estudiante::where('identificador', $identificador)->firstOrFail();
+
+        if ($estudiante->Fotoqr) {
+            Storage::delete($estudiante->Foto);
+        }
+
         $qrCodeData = $request->input('qrCodeData');
         $qrCodePath = $this->saveQRCodeImage($qrCodeData, 'ImagenesQREstudiantes/' . $identificador . '_CodigoQR.jpg');
     

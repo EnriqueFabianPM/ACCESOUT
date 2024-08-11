@@ -41,14 +41,6 @@
                 <th>Email:</th>
                 <td>{{ $visitante->email }}</td>
             </tr>
-            <tr>
-                <th>Entrada:</th>
-                <td>{{ $visitante->entrada }}</td>
-            </tr>
-            <tr>
-                <th>Salida:</th>
-                <td>{{ $visitante->salida }}</td>
-            </tr>
         </table>
     </div>
 </div>

@@ -14,6 +14,18 @@
                         <i class="fa fa-plus" aria-hidden="true"></i> Registrar Nuevo Empleado
                     </a>
 
+                    <form action="{{ route('empleados.import') }}" method="POST" enctype="multipart/form-data" class="mb-3">
+                        @csrf
+                        <div class="form-group">
+                            <label for="import_file">Subir archivo Excel (.xlsx)</label>
+                            <input type="file" name="import_file" id="import_file" accept=".xlsx" class="form-control">
+                            @error('import_file')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <button type="submit" class="btn btn-primary">Subir</button>
+                    </form>
+
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -37,16 +49,29 @@
                                     <td>{{ $empleado->identificador }}</td>
                                     <td>
                                         @if($empleado->Fotoqr)
-                                        <img src="{{ asset($empleado->Fotoqr) }}" width="100px">
+                                            <img src="{{ asset($empleado->Fotoqr) }}" alt="QR Code" width="100px">
+                                            <form action="{{ route('empleados.sendQRCode', $empleado) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary">Enviar Código QR</button>
+                                            </form>
                                         @else
-                                        No hay imagen
+                                            <form action="{{ route('empleados.updateQRCode', $empleado->identificador) }}" method="POST" enctype="multipart/form-data">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="button" class="btn btn-primary btn-sm" onclick="generateAndUploadQR('{{ $empleado->identificador }}', this)">Generar Código QR</button>
+                                            </form>
                                         @endif
                                     </td>
                                     <td>
                                         @if($empleado->Foto)
-                                        <img src="{{ asset($empleado->Foto) }}" width="100px">
+                                            <img src="{{ asset($empleado->Foto) }}" width="100px" alt="Foto">
                                         @else
-                                        No hay imagen
+                                            <form action="{{ route('empleados.updatePhoto', $empleado->identificador) }}" method="POST" enctype="multipart/form-data">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="file" class="form-control-file" id="Foto" name="Foto" required>
+                                                <button type="submit" class="btn btn-primary btn-sm mt-2">Subir Foto</button>
+                                            </form>
                                         @endif
                                     </td>
                                     <td>{{ $empleado->nombre }}</td>
@@ -93,4 +118,44 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
+<script>
+    function generateAndUploadQR(identificador, button) {
+        const baseURL = window.location.origin;
+        const url = `${baseURL}/empleados/${identificador}/update-qr`;
+        const redirectURL = `${baseURL}/empleados/show/${identificador}`;
+        const typeNumber = 4;
+        const errorCorrectionLevel = 'L';
+        const qr = qrcode(typeNumber, errorCorrectionLevel);
+        qr.addData(redirectURL);
+        qr.make();
+
+        const qrCodeDataURL = qr.createDataURL();
+
+        // Display QR code temporarily
+        const td = button.closest('td');
+        td.innerHTML = `<img src="${qrCodeDataURL}" alt="QR Code" width="100px">`;
+
+        // Send the QR code data to the server
+        fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ qrCodeData: qrCodeDataURL })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the table cell with the newly saved QR code
+                td.innerHTML = `<img src="${data.filePath}" alt="QR Code" width="100px">`;
+            } else {
+                alert('Error al actualizar el código QR.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
 @endsection
