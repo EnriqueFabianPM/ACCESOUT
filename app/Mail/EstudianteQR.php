@@ -39,3 +39,4 @@ class EstudianteQR extends Mailable
                     ->with('qrImagePath', $this->qrImagePath);
     }
 }
+

@@ -50,6 +50,10 @@
                                     <td>
                                         @if($estudiante->Fotoqr)
                                             <img src="{{ asset($estudiante->Fotoqr) }}" alt="QR Code" width="100px">
+                                            <form action="{{ route('estudiantes.sendQRCode', $estudiante) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary">Enviar Código QR</button>
+                                            </form>
                                         @else
                                             <form action="{{ route('estudiantes.updateQRCode', $estudiante->identificador) }}" method="POST" enctype="multipart/form-data">
                                                 @csrf

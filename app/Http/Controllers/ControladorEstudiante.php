@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\EstudianteQR;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\EstudiantesImport;
+use Illuminate\Support\Facades\Log;
 
 class ControladorEstudiante extends Controller
 {
@@ -133,6 +134,31 @@ class ControladorEstudiante extends Controller
         }
     }
 
+    public function sendQRCode(Estudiante $estudiante)
+    {
+        try {
+            // Get the student's email and domain
+            $email = $estudiante->email;
+            $domain = substr(strrchr($email, "@"), 1);
+    
+            // Determine which mailer to use based on the email domain
+            if ($domain === 'gmail.com' || $domain === 'googlemail.com') {
+                Mail::mailer('smtp')->to($email)->send(new EstudianteQR($estudiante->Fotoqr));
+            } elseif (in_array($domain, ['outlook.com', 'hotmail.com', 'live.com'])) {
+                Mail::mailer('smtp_outlook')->to($email)->send(new EstudianteQR($estudiante->Fotoqr));
+            } else {
+                Mail::to($email)->send(new EstudianteQR($estudiante->Fotoqr));
+            }
+    
+            return redirect()->route('estudiantes.index')->with('success', 'Código QR enviado correctamente.');
+    
+        } catch (\Exception $e) {
+            Log::error('Failed to send email: ' . $e->getMessage());
+            return redirect()->route('estudiantes.index')->with('error', 'Failed to send QR code.');
+        }
+    }
+    
+
     public function importFromExcel(Request $request)
     {
         $request->validate([
@@ -235,5 +261,4 @@ class ControladorEstudiante extends Controller
             'filePath' => asset($qrCodePath),
         ]);
     }
-    
 }
