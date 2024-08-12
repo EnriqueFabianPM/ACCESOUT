@@ -37,8 +37,6 @@
                                     <th>Motivo de Visita</th>
                                     <th>Telefono</th>
                                     <th>Email</th>
-                                    <th>Entrada</th>
-                                    <th>Salida</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -66,8 +64,6 @@
                                     <td>{{ $visitante->motivo }}</td>
                                     <td>{{ $visitante->telefono }}</td>
                                     <td>{{ $visitante->email }}</td>
-                                    <td>{{ $visitante->entrada }}</td>
-                                    <td>{{ $visitante->salida }}</td>
                                     <td>
                                         <a href="{{ route('visitantes.show', $visitante->identificador) }}"
                                             class="btn btn-info btn-sm" title="Ver Visitante">

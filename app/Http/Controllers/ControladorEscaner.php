@@ -56,21 +56,21 @@ class ControladorEscaner extends Controller
         $identificador = $request->input('identificador');
 
         $estudiante = Estudiante::where('identificador', $identificador)->first();
+        $empleado = Empleado::where('identificador', $identificador)->first();
+        $visitante = Visitante::where('identificador', $identificador)->first();
+
         if ($estudiante) {
             return redirect()->route('estudiantes.entrada', $estudiante->identificador);
         }
-
-        $empleado = Empleado::where('identificador', $identificador)->first();
-        if ($empleado) {
+        elseif ($empleado){
             return redirect()->route('empleados.entrada', $empleado->identificador);
         }
-
-        $visitante = Visitante::where('identificador', $identificador)->first();
-        if ($visitante) {
+        elseif ($visitante){
             return redirect()->route('visitantes.entrada', $visitante->identificador);
         }
-
-        return redirect()->route('guardia.matriculaentrada')->with('error', 'Identificador no encontrado.');
+        else{
+            return redirect()->route('guardia.matriculaentrada')->with('error', 'Identificador no encontrado.');
+        }
     }
 
     public function searchSalidaByIdentifier(Request $request)
@@ -78,20 +78,20 @@ class ControladorEscaner extends Controller
         $identificador = $request->input('identificador');
 
         $estudiante = Estudiante::where('identificador', $identificador)->first();
+        $empleado = Empleado::where('identificador', $identificador)->first();
+        $visitante = Visitante::where('identificador', $identificador)->first();
+
         if ($estudiante) {
             return redirect()->route('estudiantes.salida', $estudiante->identificador);
         }
-
-        $empleado = Empleado::where('identificador', $identificador)->first();
-        if ($empleado) {
+        elseif ($empleado){
             return redirect()->route('empleados.salida', $empleado->identificador);
         }
-
-        $visitante = Visitante::where('identificador', $identificador)->first();
-        if ($visitante) {
+        elseif ($visitante){
             return redirect()->route('visitantes.salida', $visitante->identificador);
         }
-
-        return redirect()->route('guardia.matriculasalida')->with('error', 'Identificador no encontrado.');
+        else{
+            return redirect()->route('guardia.matriculasalida')->with('error', 'Identificador no encontrado.');
+        }
     }
 }

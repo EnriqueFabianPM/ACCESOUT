@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Registrar Salida')
+@section('title', 'Menu de Estudiantes')
 
 @section('content')
 <div class="container-fluid d-flex justify-content-center align-items-center vh-100">
@@ -25,11 +25,10 @@
         }
     </style>
     <div class="text-center">
-        <h1 class="mb-4">Registrar Salida</h1>
+        <h1 class="mb-4">Menu de Estudiantes</h1>
         <div class="btn-group d-flex flex-column align-items-center">
-            <a href="{{ route('salidascanner') }}" class="btn btn-custom">Escanear por Código QR</a>
-            <a href="{{ route('guardia.matriculasalida') }}" class="btn btn-custom">Escanear por Identificador</a>
-            <a href="{{ route('InicioGuardia') }}" class="btn btn-custom">Volver a Inicio</a>
+            <a href="{{ route('estudiantes.index') }}" class="btn btn-custom">Ir a Tabla de Estudiantes</a>
+            <a href="{{ route('InicioDireccion') }}" class="btn btn-custom">Volver a Direccion Academica</a>
         </div>
     </div>
 </div>

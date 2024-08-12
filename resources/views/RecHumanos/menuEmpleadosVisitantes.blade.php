@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Registrar Salida')
+@section('title', 'Menu de Empleados y Visitantes')
 
 @section('content')
 <div class="container-fluid d-flex justify-content-center align-items-center vh-100">
@@ -25,11 +25,11 @@
         }
     </style>
     <div class="text-center">
-        <h1 class="mb-4">Registrar Salida</h1>
+        <h1 class="mb-4">Menu de Empleados y Visitantes</h1>
         <div class="btn-group d-flex flex-column align-items-center">
-            <a href="{{ route('salidascanner') }}" class="btn btn-custom">Escanear por Código QR</a>
-            <a href="{{ route('guardia.matriculasalida') }}" class="btn btn-custom">Escanear por Identificador</a>
-            <a href="{{ route('InicioGuardia') }}" class="btn btn-custom">Volver a Inicio</a>
+            <a href="{{ route('empleados.index') }}" class="btn btn-custom">Ir a Tabla de Empleados</a>
+            <a href="{{ route('visitantes.index') }}" class="btn btn-custom">Ir a Tabla de Visitantes</a>
+            <a href="{{ route('InicioRecursos') }}" class="btn btn-custom">Volver a Recursos Humanos</a>
         </div>
     </div>
 </div>

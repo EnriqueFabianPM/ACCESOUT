@@ -40,7 +40,7 @@
         </div>
     </div>
     <div class="col-lg-12 text-center mt-3">
-        <form action="{{ route('visitantes.registrarEntrada', $visitante->id) }}" method="POST">
+        <form action="{{ route('visitantes.entrada', $visitante->id) }}" method="POST">
             @csrf
             <button type="submit" class="btn btn-primary btn-lg">Registrar Entrada</button>
         </form>

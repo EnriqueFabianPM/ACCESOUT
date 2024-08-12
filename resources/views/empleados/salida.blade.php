@@ -44,7 +44,7 @@
         </div>
     </div>
     <div class="col-lg-12 text-center mt-3">
-        <form action="{{ route('empleados.registrarSalida', $empleado->id) }}" method="POST">
+        <form action="{{ route('empleados.salida', $empleado->id) }}" method="POST">
             @csrf
             <button type="submit" class="btn btn-primary btn-lg">Registrar Salida</button>
         </form>

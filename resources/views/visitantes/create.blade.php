@@ -32,14 +32,6 @@
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
             <div class="form-group">
-                <label for="entrada">Entrada</label>
-                <input type="date" class="form-control" id="entrada" name="entrada">
-            </div>
-            <div class="form-group">
-                <label for="salida">Salida</label>
-                <input type="date" class="form-control" id="salida" name="salida">
-            </div>
-            <div class="form-group">
                 <h3>Generar Código QR</h3>
                 <button type="button" id="generateQR" class="btn btn-primary">Generar QR Code</button>
             </div>

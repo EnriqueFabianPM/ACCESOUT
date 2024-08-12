@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Página Principal del Guardia de Seguridad')
+@section('title', 'Página Principal de Recursos Humanos')
 
 @section('content')
 <div class="container-fluid position-relative vh-100">
@@ -27,29 +27,22 @@
         }
 
         .top-left {
-            top: 100px;
+            top: 120px;
             left: 150px;
         }
 
         .top-right {
-            top: 100px;
+            top: 120px;
             right: 150px;
         }
 
-        .bottom-left {
-            bottom: 260px;
-            left: 150px;
-        }
-
-        .bottom-right {
-            bottom: 260px;
-            right: 150px;
+        .top-middle {
+            top: 120px;
+            right: 480px;
         }
     </style>
-    <h1 class="text-center mb-4">Página Principal del Guardia de Seguridad</h1>
-    <a href="{{ route('guardia.registrarentrada') }}" class="btn btn-custom top-left">Registrar Entrada</a>
-    <a href="{{ route('guardia.registrarsalida') }}" class="btn btn-custom top-right">Registrar Salida</a>
-    <a href="{{ route('guardia.registrarvisitante') }}" class="btn btn-custom bottom-left">Registrar Visitante</a>
-    <a href="{{ route('home') }}" class="btn btn-custom bottom-right">Volver a Acceso UT</a>
+    <h1 class="text-center mb-4">Página Principal de Recursos Humanos</h1>
+    <a href="{{ route('RecHumanos.menuEmpleadosVisitantes') }}" class="btn btn-custom top-left">Ir a Menu de Empleados y Visitantes</a>
+    <a href="{{ route('home') }}" class="btn btn-custom top-right">Volver a Acceso UT</a>
 </div>
 @endsection

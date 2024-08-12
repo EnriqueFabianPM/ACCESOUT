@@ -202,4 +202,16 @@ class ControladorVisitante extends Controller
             'filePath' => asset($qrCodePath),
         ]);
     }
+
+    public function showEntrada($identificador): View
+    {
+        $visitante = Visitante::where('identificador', $identificador)->firstOrFail();
+        return view('visitantes.entrada', compact('visitante'));
+    }
+    
+    public function showSalida($identificador): View
+    {
+        $visitante = Visitante::where('identificador', $identificador)->firstOrFail();
+        return view('visitantes.salida', compact('visitante'));
+    }
 }

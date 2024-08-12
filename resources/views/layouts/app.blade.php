@@ -11,7 +11,7 @@
     <!-- Custom Styles -->
     <style>
         body {
-            background-color: #25b725; /* Main body background color */
+            background-color: #22D65E; /* Main body background color */
         }
         .container {
             background-color: #ffffff; /* Container background color */

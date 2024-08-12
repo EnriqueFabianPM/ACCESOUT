@@ -241,4 +241,16 @@ class ControladorEmpleado extends Controller
             'filePath' => asset($qrCodePath),
         ]);
     }
+
+    public function showEntrada($identificador): View
+    {
+        $empleado = Empleado::where('identificador', $identificador)->firstOrFail();
+        return view('empleados.entrada', compact('empleado'));
+    }
+    
+    public function showSalida($identificador): View
+    {
+        $empleado = Empleado::where('identificador', $identificador)->firstOrFail();
+        return view('empleados.salida', compact('empleado'));
+    }
 }

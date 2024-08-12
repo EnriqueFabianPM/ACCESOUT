@@ -41,14 +41,6 @@
                 <input type="email" class="form-control" id="email" name="email" value="{{ $visitante->email }}" required>
             </div>
             <div class="form-group">
-                <label for="entrada">Entrada:</label>
-                <input type="date" class="form-control" id="entrada" name="entrada" value="{{ $visitante->entrada }}">
-            </div>
-            <div class="form-group">
-                <label for="salida">Salida:</label>
-                <input type="date" class="form-control" id="salida" name="salida" value="{{ $visitante->salida }}">
-            </div>
-            <div class="form-group">
                 <label for="Fotoqr">Generar nuevo Codigo QR</label>
                 <button type="button" id="generateQR" class="btn btn-primary">Generar QR</button>
 
