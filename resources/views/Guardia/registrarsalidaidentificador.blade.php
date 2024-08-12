@@ -33,7 +33,6 @@
 
         <!-- Form for scanning by identificador -->
         <form action="{{ route('guardia.salir') }}" method="GET">
-            @csrf
             <div class="form-group">
                 <label for="identificador">Identificador:</label>
                 <input type="text" id="identificador" name="identificador" class="form-control" required>

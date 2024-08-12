@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Estudiante;
 use App\Models\Empleado;
 use App\Models\Visitante;
+use App\Models\EntradasSalidas;
 use Illuminate\Support\Facades\Log;
 
 class ControladorEscaner extends Controller
@@ -54,44 +55,98 @@ class ControladorEscaner extends Controller
     public function searchEntradaByIdentifier(Request $request)
     {
         $identificador = $request->input('identificador');
-
         $estudiante = Estudiante::where('identificador', $identificador)->first();
         $empleado = Empleado::where('identificador', $identificador)->first();
         $visitante = Visitante::where('identificador', $identificador)->first();
-
+    
         if ($estudiante) {
             return redirect()->route('estudiantes.entrada', $estudiante->identificador);
-        }
-        elseif ($empleado){
+        } elseif ($empleado){
             return redirect()->route('empleados.entrada', $empleado->identificador);
-        }
-        elseif ($visitante){
+        } elseif ($visitante){
             return redirect()->route('visitantes.entrada', $visitante->identificador);
-        }
-        else{
+        } else {
             return redirect()->route('guardia.matriculaentrada')->with('error', 'Identificador no encontrado.');
         }
     }
-
+    
     public function searchSalidaByIdentifier(Request $request)
     {
         $identificador = $request->input('identificador');
-
         $estudiante = Estudiante::where('identificador', $identificador)->first();
         $empleado = Empleado::where('identificador', $identificador)->first();
         $visitante = Visitante::where('identificador', $identificador)->first();
-
+    
         if ($estudiante) {
             return redirect()->route('estudiantes.salida', $estudiante->identificador);
-        }
-        elseif ($empleado){
+        } elseif ($empleado){
             return redirect()->route('empleados.salida', $empleado->identificador);
-        }
-        elseif ($visitante){
+        } elseif ($visitante){
             return redirect()->route('visitantes.salida', $visitante->identificador);
-        }
-        else{
+        } else {
             return redirect()->route('guardia.matriculasalida')->with('error', 'Identificador no encontrado.');
         }
+    }
+
+    public function registrarEntrada(Request $request, $identificador)
+    {
+        $caseta = $request->input('caseta');
+    
+        // Determine the type based on identifier
+        $estudiante = Estudiante::where('identificador', $identificador)->first();
+        $empleado = Empleado::where('identificador', $identificador)->first();
+        $visitante = Visitante::where('identificador', $identificador)->first();
+    
+        if ($estudiante) {
+            $this->saveEntrada($estudiante, 'estudiante', $caseta);
+        } elseif ($empleado) {
+            $this->saveEntrada($empleado, 'empleado', $caseta);
+        } elseif ($visitante) {
+            $this->saveEntrada($visitante, 'visitante', $caseta);
+        }
+    
+        return redirect()->back()->with('success', 'Entrada registrada con éxito.');
+    }
+    
+    public function registrarSalida(Request $request, $identificador)
+    {
+        $caseta = $request->input('caseta');
+    
+        // Determine the type based on identifier
+        $estudiante = Estudiante::where('identificador', $identificador)->first();
+        $empleado = Empleado::where('identificador', $identificador)->first();
+        $visitante = Visitante::where('identificador', $identificador)->first();
+    
+        if ($estudiante) {
+            $this->saveSalida($estudiante, 'estudiante', $caseta);
+        } elseif ($empleado) {
+            $this->saveSalida($empleado, 'empleado', $caseta);
+        } elseif ($visitante) {
+            $this->saveSalida($visitante, 'visitante', $caseta);
+        }
+    
+        return redirect()->back()->with('success', 'Salida registrada con éxito.');
+    }
+
+    private function saveEntrada($user, $tipo, $caseta)
+    {
+        EntradasSalidas::updateOrCreate(
+            ['identificador' => $user->identificador, 'tipo' => $tipo, 'caseta' => $caseta, 'nombre' => $user->nombre, 'apellidos' => $user->apellidos],
+            ['entrada' => now()]
+        );
+    }
+
+    private function saveSalida($user, $tipo, $caseta)
+    {
+        EntradasSalidas::updateOrCreate(
+            ['identificador' => $user->identificador, 'tipo' => $tipo, 'caseta' => $caseta, 'nombre' => $user->nombre, 'apellidos' => $user->apellidos],
+            ['salida' => now()]
+        );
+    }
+
+    public function index(): View
+    {
+        $entradassalidas = EntradasSalidas::all();
+        return view('Guardia.entradassalidas', compact('entradassalidas'));
     }
 }

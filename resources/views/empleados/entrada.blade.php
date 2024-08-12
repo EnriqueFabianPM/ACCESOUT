@@ -43,8 +43,15 @@
         </table>
     </div>
     <div class="col-lg-12 text-center mt-3">
-        <form action="{{ route('empleados.entrada', $empleado->identificador) }}" method="POST">
+        <form action="{{ route('empleados.registerentrada', $empleado->identificador) }}" method="POST">
             @csrf
+            <div class="form-group">
+                <label for="caseta">Selecciona la caseta:</label>
+                <select name="caseta" id="caseta" class="form-control">
+                    <option value="peatonal">Peatonal</option>
+                    <option value="vehicular">Vehicular</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary btn-lg">Registrar Entrada</button>
         </form>
     </div>

@@ -14,11 +14,11 @@
                 </tr>
                 <tr>
                     <th>Imagen de Código QR:</th>
-                    <td><img src="{{ asset($estudiante->Fotoqr) }}" alt="Código QR de {{ $estudiante->nombre }}" width="100px"></td>
+                    <td><img src="{{ asset($estudiante->Fotoqr) }}" width="100px"></td>
                 </tr>
                 <tr>
                     <th>Foto de Estudiante:</th>
-                    <td><img src="{{ asset($estudiante->Foto) }}" alt="Foto de {{ $estudiante->nombre }}" height="100px" width="100px"></td>
+                    <td><img src="{{ asset($estudiante->Foto) }}" height="100px" width="100px"></td>
                 </tr>
                 <tr>
                     <th>Nombre:</th>
@@ -44,8 +44,15 @@
         </div>
     </div>
     <div class="col-lg-12 text-center mt-3">
-        <form action="{{ route('estudiantes.salida', $estudiante->identificador) }}" method="POST">
+        <form action="{{ route('estudiantes.registersalida', $estudiante->identificador) }}" method="POST">
             @csrf
+            <div class="form-group">
+                <label for="caseta">Selecciona la caseta:</label>
+                <select name="caseta" id="caseta" class="form-control">
+                    <option value="peatonal">Peatonal</option>
+                    <option value="vehicular">Vehicular</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary btn-lg">Registrar Salida</button>
         </form>
     </div>
