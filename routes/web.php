@@ -29,8 +29,13 @@ Route::get('/scan/{qrCode}', [ControladorEscaner::class, 'handleScan'])->name('s
 Route::get('/guardia/inicio', function () { return view('Guardia.InicioGuardia'); })->name('InicioGuardia');
 Route::get('/guardia/registrarentrada', function () { return view('Guardia.registrarentrada'); })->name('guardia.registrarentrada');
 Route::get('/guardia/registrarsalida', function () { return view('Guardia.registrarsalida'); })->name('guardia.registrarsalida');
+Route::get('/guardia/registrarentrada/busqueda', function () { return view('Guardia.registrarentradaidentificador'); })->name('guardia.matriculaentrada');
+Route::get('/guardia/registrarsalida/busqueda', function () { return view('Guardia.registrarsalidaidentificador'); })->name('guardia.matriculasalida');
+Route::get('/guardia/registrarentrada/busqueda/entrada', [ControladorEscaner::class, 'searchEntradaByIdentifier'])->name('guardia.entrar');
+Route::get('/guardia/registrarsalida/busqueda/salida', [ControladorEscaner::class, 'searchSalidaByIdentifier'])->name('guardia.salir');
 Route::get('/guardia/registrarentrada/scanner', function () { return view('Guardia.entradascanner'); })->name('entradascanner');
 Route::get('/guardia/registrarsalida/scanner', function () { return view('Guardia.salidascanner'); })->name('salidascanner');
+Route::get('/guardia/registrarvisitante', function () { return view('Guardia.registrarvisitante'); })->name('guardia.registrarvisitante');
 
 // Rutas de estudiantes
 Route::resource('estudiantes', ControladorEstudiante::class)->except(['show', 'edit', 'destroy']);

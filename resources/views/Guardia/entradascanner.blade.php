@@ -5,11 +5,16 @@
 @section('content')
     <div class="container mt-4">
         <center><h1>Escanear Código QR para entrar a la universidad</h1></center>
+        <p id="loadingMessage" class="text-center mt-3">Aumente el brillo y hacer zoom para escanear mas facilmente</p>
         <div class="form-group mt-5">
             <label for="qrInput">Coloque el cursor en el campo de abajo y escanee el Código QR:</label>
             <input type="text" id="qrInput" class="form-control" autofocus>
         </div>
-        <p id="loadingMessage" class="text-center mt-3">Aumente el brillo y hacer zoom para escanear mas facilmente</p>
+        <!-- Buttons for other actions -->
+        <div class="btn-group mt-4" role="group" aria-label="Acciones del Guardia">
+            <a href="{{ route('guardia.registrarentrada') }}" class="btn btn-primary btn-lg">Volver a registro de entrada</a>
+            <a href="{{ route('InicioGuardia') }}" class="btn btn-secondary btn-lg">Volver a Inicio</a>
+        </div>
     </div>
 
     <script>

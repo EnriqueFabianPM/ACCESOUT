@@ -1,49 +1,35 @@
 @extends('layouts.app')
 
-@section('title', 'Pagina principal de Guardia de Seguridad')
+@section('title', 'Registrar Entrada')
 
 @section('content')
-<div class="container mt-4">
+<div class="container-fluid d-flex justify-content-center align-items-center vh-100">
     <style>
-        .btn-primary{
-            align-items: center;
-            background-color: #2bc021;
-            column-gap: 10px;
-            display: flex;
-            padding: 10px;
-            margin-top: 150px;
-            border-color: #ffffff;
-
-
-        }
-        .btn-secondary{
-            background-color: #2bc021;
-            column-gap: 10px;
-            display: flex;
-            padding: 10px;
-            margin-top: 150px;
-            border-color: #ffffff;
-        }
-        .btn-info{
+        .btn-custom {
             background-color: #2bc021;
             color: #ffffff;
-            column-gap: 10px;
-            display: flex;
-            padding: 10px;
-            margin-top: 150px;
             border-color: #ffffff;
-
+            width: 20vw; /* 20% of the viewport width */
+            height: 20vh; /* 20% of the viewport height */
+            font-size: 1.5rem; /* Larger text size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 10px; /* Space between buttons */
+        }
+        
+        .btn-custom:hover {
+            background-color: #1e8d13; /* Darker green on hover */
+            border-color: #ffffff;
         }
     </style>
-    <div class="row">
-        <div class="col-lg-12">
-            <h1 class="text-center">Registrar entrada</h1>
-            <div class="text-center mt-4">
-                <div class="btn-group" role="group" aria-label="Acciones del Guardia">
-                    <a href="{{ route('entradascanner') }}" class="btn btn-primary btn-lg">Escanear por Codigo QR</a>
-                    <a class="btn btn-primary btn-lg">Escanear por Matricula (identificador)</a> <!--href="{'{ route('scan.handle') }}"-->
-                </div>
-            </div>
+    <div class="text-center">
+        <h1 class="mb-4">Registrar Entrada</h1>
+        <div class="btn-group d-flex flex-column align-items-center">
+            <a href="{{ route('entradascanner') }}" class="btn btn-custom">Escanear por Código QR</a>
+            <a href="{{ route('guardia.matriculaentrada') }}" class="btn btn-custom">Escanear por Identificador</a>
+            <a href="{{ route('InicioGuardia') }}" class="btn btn-custom">Volver a Inicio</a>
         </div>
     </div>
 </div>
