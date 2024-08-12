@@ -6,6 +6,7 @@ use App\Http\Controllers\ControladorEmpleado;
 use App\Http\Controllers\ControladorVisitante;
 use App\Http\Controllers\ControladorEscaner;
 use App\Http\Controllers\ControladorGuardia;
+use App\Http\Controllers\ControladorEntradasSalidas;
 use Illuminate\Support\Facades\Auth;
 
 // Main welcome page
@@ -13,16 +14,8 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// Página principal del guardia
-Route::get('/InicioGuardia', function () {
-    return view('InicioGuardia');
-})->name('InicioGuardia');
-
 // Authentication routes
 Auth::routes();
-
-// Route for QR code scanner page
-Route::get('/scanner', [ControladorGuardia::class, 'scanner'])->name('scanner');
 
 // Route to get IP address
 Route::get('/get-ip', function () {
@@ -32,9 +25,12 @@ Route::get('/get-ip', function () {
 // Route for handling QR code scans
 Route::get('/scan/{qrCode}', [ControladorEscaner::class, 'handleScan'])->name('scan.handle');
 
-// Custom Entrada and Salida routes using ControladorGuardia
-Route::post('/register-entrada/{type}', [ControladorGuardia::class, 'registerEntrada'])->name('register.entrada');
-Route::post('/register-salida/{type}', [ControladorGuardia::class, 'registerSalida'])->name('register.salida');
+// Rutas del guardia de seguridad
+Route::get('/guardia/inicio', function () { return view('Guardia.InicioGuardia'); })->name('InicioGuardia');
+Route::get('/guardia/registrarentrada', function () { return view('Guardia.registrarentrada'); })->name('guardia.registrarentrada');
+Route::get('/guardia/registrarsalida', function () { return view('Guardia.registrarsalida'); })->name('guardia.registrarsalida');
+Route::get('/guardia/registrarentrada/scanner', function () { return view('Guardia.entradascanner'); })->name('entradascanner');
+Route::get('/guardia/registrarsalida/scanner', function () { return view('Guardia.salidascanner'); })->name('salidascanner');
 
 // Rutas de estudiantes
 Route::resource('estudiantes', ControladorEstudiante::class)->except(['show', 'edit', 'destroy']);
@@ -48,6 +44,8 @@ Route::get('estudiantes/export/', [ControladorEstudiante::class, 'export'])->nam
 Route::patch('estudiantes/{identificador}/update-photo', [ControladorEstudiante::class, 'updatePhoto'])->name('estudiantes.updatePhoto');
 Route::patch('estudiantes/{identificador}/update-qr', [ControladorEstudiante::class, 'updateQRCode'])->name('estudiantes.updateQRCode');
 Route::post('estudiantes/{estudiante}/send-qr', [ControladorEstudiante::class, 'sendQRCode'])->name('estudiantes.sendQRCode');
+Route::get('estudiantes/entrada/{identificador}', [ControladorEstudiante::class, 'showEntrada'])->name('estudiantes.entrada');
+Route::get('estudiantes/salida/{identificador}', [ControladorEstudiante::class, 'showSalida'])->name('estudiantes.salida');
 
 // Rutas de empleados
 Route::resource('empleados', ControladorEmpleado::class)->except(['show', 'edit', 'destroy']);
@@ -61,6 +59,8 @@ Route::get('empleados/export/', [ControladorEmpleado::class, 'export'])->name('e
 Route::patch('empleados/{identificador}/update-photo', [ControladorEmpleado::class, 'updatePhoto'])->name('empleados.updatePhoto');
 Route::patch('empleados/{identificador}/update-qr', [ControladorEmpleado::class, 'updateQRCode'])->name('empleados.updateQRCode');
 Route::post('empleados/{empleado}/send-qr', [ControladorEmpleado::class, 'sendQRCode'])->name('empleados.sendQRCode');
+Route::get('empleados/entrada/{identificador}', [ControladorEntradasSalidas::class, 'registrarEntrada'])->name('empleados.entrada');
+Route::get('empleados/salida/{identificador}', [ControladorEntradasSalidas::class, 'registrarSalida'])->name('empleados.salida');
 
 // Rutas de visitantes
 Route::resource('visitantes', ControladorVisitante::class)->except(['show', 'edit', 'destroy']);
@@ -73,6 +73,8 @@ Route::post('visitantes/import', [ControladorVisitante::class, 'importFromExcel'
 Route::get('visitantes/export/', [ControladorVisitante::class, 'export'])->name('visitantes.export');
 Route::patch('visitantes/{identificador}/update-qr', [ControladorVisitante::class, 'updateQRCode'])->name('visitantes.updateQRCode');
 Route::post('visitantes/{visitante}/send-qr', [ControladorVisitante::class, 'sendQRCode'])->name('visitantes.sendQRCode');
+Route::get('visitantes/entrada/{identificador}', [ControladorEntradasSalidas::class, 'registrarEntrada'])->name('visitantes.entrada');
+Route::get('visitantes/salida/{identificador}', [ControladorEntradasSalidas::class, 'registrarSalida'])->name('visitantes.salida');
 
 // Admin routes with middleware
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {

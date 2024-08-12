@@ -44,11 +44,10 @@ class ControladorEscaner extends Controller
                 return redirect()->route("{$routePrefix}.entrada", $record->id);
             } elseif (is_null($record->salida)) {
                 return redirect()->route("{$routePrefix}.salida", $record->id);
-            } else {
-                return redirect()->route("{$routePrefix}.log");
             }
-        }
-
+            
+            return redirect()->route('InicioGuardia')->with('error', 'Error al registrar persona.');
+        }     
         return null;
     }
 }

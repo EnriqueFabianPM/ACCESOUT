@@ -38,8 +38,6 @@
                                     <th>Area de Trabajo</th>
                                     <th>Telefono</th>
                                     <th>Email</th>
-                                    <th>Entrada</th>
-                                    <th>Salida</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -79,8 +77,6 @@
                                     <td>{{ $empleado->areatrabajo }}</td>
                                     <td>{{ $empleado->telefono }}</td>
                                     <td>{{ $empleado->email }}</td>
-                                    <td>{{ $empleado->entrada }}</td>
-                                    <td>{{ $empleado->salida }}</td>
                                     <td>
                                         <a href="{{ route('empleados.show', $empleado->identificador) }}"
                                             class="btn btn-info btn-sm" title="Ver Empleado">

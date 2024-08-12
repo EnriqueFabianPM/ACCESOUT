@@ -46,8 +46,6 @@ class ControladorEmpleado extends Controller
             'areatrabajo' => 'required|string|max:255',
             'telefono' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:empleados',
-            'entrada' => 'nullable|date',
-            'salida' => 'nullable|date',
         ]);
 
         // Handle Foto upload
@@ -102,8 +100,6 @@ class ControladorEmpleado extends Controller
             'areatrabajo' => 'required|string|max:255',
             'telefono' => 'required|string|max:255', 
             'email' => 'required|string|email|max:255|unique:empleados,email,' . $empleado->id,
-            'entrada' => 'nullable|date',
-            'salida' => 'nullable|date',
         ]);
 
         // Handle Foto upload

@@ -212,4 +212,17 @@ class ControladorEstudiante extends Controller
             'filePath' => asset($qrCodePath),
         ]);
     }
+
+    public function showEntrada($identificador): View
+    {
+        $estudiante = Estudiante::where('identificador', $identificador)->firstOrFail();
+        return view('estudiantes.entrada', compact('estudiante'));
+    }
+    
+    public function showSalida($identificador): View
+    {
+        $estudiante = Estudiante::where('identificador', $identificador)->firstOrFail();
+        return view('estudiantes.salida', compact('estudiante'));
+    }
+    
 }
