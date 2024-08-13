@@ -35,7 +35,7 @@
 
         <!-- Sección de bienvenida -->
         <section id="bienvenida" style="background-color: #ececec; padding: 10px; color: #000000;">
-            <center><h1 class="INT">Bienvenidos a Acceso UTSC</h1></center>
+            <center><h1 class="INT">Bienvenidos a Acceso UT</h1></center>
             <center><h2 class="DESC">
                 Este sistema ha sido diseñado para optimizar el acceso a las instalaciones mediante la verificación de la identidad del alumno a través del escaneo del código QR en su credencial estudiantil, 
                 o buscando sus datos en la base de datos de estudiantes. Además, permite verificar la identidad de los visitantes y registrar el motivo de su visita, 
